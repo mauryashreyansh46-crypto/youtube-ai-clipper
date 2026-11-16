@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>AI YouTube Clipper - Railway</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #121212; color: white; }
+        .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; }
+        input, select, button { width: 100%; margin: 10px 0; padding: 10px; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>YouTube AI Clipper (Railway)</h2>
+        <input type="text" id="url" placeholder="YouTube URL/Stream">
+        <select id="format">
+            <option value="Standard">Standard Clipping</option>
+            <option value="Split-Screen">Split-Screen (Gameplay)</option>
+        </select>
+        <input type="text" id="gameplay" placeholder="Gameplay URL (if Split-Screen)">
+        <select id="length">
+            <option value="15">15 Seconds</option>
+            <option value="30">30 Seconds</option>
+            <option value="60">60 Seconds</option>
+        </select>
+        <select id="captions">
+            <option value="Yes">Captions: Yes</option>
+            <option value="No">Captions: No</option>
+        </select>
+        <button onclick="startWorkflow()">Start Clipping</button>
+        <p id="status"></p>
+        <div id="clips" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        async function startWorkflow() {
+            const url = document.getElementById('url').value;
+            const format = document.getElementById('format').value;
+            const gameplay = document.getElementById('gameplay').value;
+            const length = document.getElementById('length').value;
+            const captions = document.getElementById('captions').value;
+
+            document.getElementById('status').innerText = "Railway Backend Processing...";
+            
+            const response = await fetch('/api/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    youtube_url: url,
+                    format: format,
+                    length: length,
+                    gameplay_url: gameplay,
+                    captions: captions
+                })
+            });
+
+            const data = await response.json();
+            document.getElementById('status').innerText = data.message;
+            
+            const poll = setInterval(async () => {
+                const statusRes = await fetch('/api/status');
+                const statusData = await statusRes.json();
+                if (statusData.status === 'completed') {
+                    clearInterval(poll);
+                    document.getElementById('status').innerText = "Clips Ready! Check /output_clips/";
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
