@@ -1,0 +1,8 @@
+flask
+requests
+openai
+google-generativeai
+groq
+moviepy[optional]
+ffmpeg-python
+yt-dlp
