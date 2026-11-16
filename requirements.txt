@@ -1,9 +1,0 @@
-flask
-requests
-openai
-google-generativeai
-nvidia-nim
-groq
-moviepy
-ffmpeg-python
-yt-dlp
